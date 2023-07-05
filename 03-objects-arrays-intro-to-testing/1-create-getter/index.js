@@ -1,12 +1,3 @@
-/**
- * createGetter - creates function getter which allows select value from object
- * @param {string} path - the strings path separated by dot
- * @returns {function} - function-getter which allow get value from object by set path
- */
-// export function createGetter(path) {
-//   return createGetter1(path);
-// }
-
 // 1st implementation (iteration)
 function createGetter1(path) {
   const objectKeysPath = path.split('.');
@@ -51,18 +42,11 @@ function createGetter2(path) {
   };
 }
 
-// 3rd implementation (reduce)
-function createGetter3(path) {
-
+/**
+ * createGetter - creates function getter which allows select value from object
+ * @param {string} path - the strings path separated by dot
+ * @returns {function} - function-getter which allow get value from object by set path
+ */
+export function createGetter(path) {
+  return createGetter1(path);
 }
-
-
-const product = {
-  category: {
-    title: "Goods"
-  }
-};
-
-const getter = createGetter3('category.title');
-
-console.log(getter(product)); // Goods
