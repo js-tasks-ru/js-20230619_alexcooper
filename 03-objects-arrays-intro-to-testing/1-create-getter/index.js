@@ -1,5 +1,9 @@
-// 1st implementation (iteration)
-function createGetter1(path) {
+/**
+ * createGetter - creates function getter which allows select value from object
+ * @param {string} path - the strings path separated by dot
+ * @returns {function} - function-getter which allow get value from object by set path
+ */
+export function createGetter(path) {
   const objectKeysPath = path.split('.');
 
   return obj => {
@@ -15,38 +19,4 @@ function createGetter1(path) {
 
     return result;
   };
-}
-
-// 2nd implementation (recursion)
-function createGetter2(path) {
-  const objectKeysPath = path.split('.');
-
-  const getPropertyValue = obj => {
-    const currentKey = objectKeysPath.shift();
-    const isLastKey = objectKeysPath.length === 0;
-
-    if (!obj.hasOwnProperty(currentKey)) {
-      return;
-    }
-
-    const lastValue = obj[currentKey];
-    if (isLastKey) {
-      return lastValue;
-    }
-
-    return getPropertyValue(lastValue);
-  };
-
-  return obj => {
-    return getPropertyValue(obj);
-  };
-}
-
-/**
- * createGetter - creates function getter which allows select value from object
- * @param {string} path - the strings path separated by dot
- * @returns {function} - function-getter which allow get value from object by set path
- */
-export function createGetter(path) {
-  return createGetter1(path);
 }
