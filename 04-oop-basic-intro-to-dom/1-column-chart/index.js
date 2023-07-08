@@ -5,7 +5,6 @@ const CHART_BODY_CLASS = 'column-chart__chart';
 
 export default class ColumnChart {
   element;
-  bodyElement;
   chartHeight = 50;
 
   constructor({
@@ -53,10 +52,10 @@ export default class ColumnChart {
       : '';
   }
 
-  getBodyHTML() {
-    const maxValue = Math.max(...this.data);
+  getBodyHTML(data = this.data) {
+    const maxValue = Math.max(...data);
 
-    return this.data
+    return data
       .map(value => {
         const scale = this.chartHeight / maxValue;
         const styleValue = Math.floor(value * scale);
@@ -76,7 +75,9 @@ export default class ColumnChart {
   update(newData) {
     this.data = newData;
 
-    this.element.getElementsByClassName(CHART_BODY_CLASS)[0].innerHTML = this.getBodyHTML();
+    this.element
+      .getElementsByClassName(CHART_BODY_CLASS)[0]
+      .innerHTML = this.getBodyHTML(newData);
 
     this.updateLoadingState();
   }
@@ -93,5 +94,6 @@ export default class ColumnChart {
 
   destroy() {
     this.remove();
+    this.data = null;
   }
 }
