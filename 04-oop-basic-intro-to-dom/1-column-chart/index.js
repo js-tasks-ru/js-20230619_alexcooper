@@ -20,39 +20,39 @@ export default class ColumnChart {
     this.link = link;
     this.formatHeading = formatHeading;
 
-    this.render();
+    this.#render();
   }
 
-  get template() {
+  get #template() {
     return `
       <div class="column-chart ${CHART_IS_LOADING_CLASS}" style="--chart-height: ${this.chartHeight}">
         <div class="column-chart__title">
           Total ${this.label}
-          ${this.getLinkHTML()}
+          ${this.#getLinkHTML()}
         </div>
         <div class="column-chart__container">
-          <div data-element="header" class="column-chart__header">${this.getValueHTML()}</div>
+          <div data-element="header" class="column-chart__header">${this.#getValueHTML()}</div>
           <div data-element="body" class="${CHART_BODY_CLASS}">
-            ${this.getBodyHTML()}
+            ${this.#getBodyHTML()}
           </div>
         </div>
       </div>
     `;
   }
 
-  getValueHTML() {
+  #getValueHTML() {
     return this.formatHeading
       ? this.formatHeading(this.value)
       : this.value;
   }
 
-  getLinkHTML() {
+  #getLinkHTML() {
     return this.link
       ? `<a href="${this.link}" class="column-chart__link">View all</a>`
       : '';
   }
 
-  getBodyHTML(data = this.data) {
+  #getBodyHTML(data = this.data) {
     const maxValue = Math.max(...data);
 
     return data
@@ -66,10 +66,16 @@ export default class ColumnChart {
       .join('');
   }
 
-  render() {
-    this.element = createElementFromString(this.template);
+  #render() {
+    this.element = createElementFromString(this.#template);
 
-    this.updateLoadingState();
+    this.#updateLoadingState();
+  }
+
+  #updateLoadingState() {
+    if (this.data.length) {
+      this.element.classList.remove(CHART_IS_LOADING_CLASS);
+    }
   }
 
   update(newData) {
@@ -77,15 +83,9 @@ export default class ColumnChart {
 
     this.element
       .getElementsByClassName(CHART_BODY_CLASS)[0]
-      .innerHTML = this.getBodyHTML(newData);
+      .innerHTML = this.#getBodyHTML(newData);
 
-    this.updateLoadingState();
-  }
-
-  updateLoadingState() {
-    if (this.data.length) {
-      this.element.classList.remove(CHART_IS_LOADING_CLASS);
-    }
+    this.#updateLoadingState();
   }
 
   remove() {
