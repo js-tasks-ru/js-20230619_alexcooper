@@ -1,7 +1,7 @@
 const TOOLTIP_POSITION_OFFSET = 10;
 
 export default class Tooltip {
-  static instance;
+  static #instance;
 
   element;
 
@@ -32,11 +32,11 @@ export default class Tooltip {
   }
 
   constructor() {
-    if (Tooltip.instance) {
-      return Tooltip.instance;
+    if (Tooltip.#instance) {
+      return Tooltip.#instance;
     }
 
-    Tooltip.instance = this;
+    Tooltip.#instance = this;
   }
 
   #addEventListeners() {
