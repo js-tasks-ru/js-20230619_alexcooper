@@ -1,9 +1,5 @@
 import createElementFromString from '../../lib/create-element.js';
-import { compareFunction as compareStrings } from '../../lib/sort-strings.js';
-
-function compareNumbers(a, b) {
-  return a - b;
-}
+import { compare } from '../../lib/sort.js';
 
 export default class SortableTable {
   element;
@@ -105,7 +101,6 @@ export default class SortableTable {
 
   #sortData(field, order) {
     const sortedData = [...this.data];
-    const direction = order === 'asc' ? 1 : -1;
 
     const column = this.headerConfig.find(column => column.id === field);
     const { sortable, sortType } = column;
@@ -115,17 +110,9 @@ export default class SortableTable {
     }
 
     sortedData.sort((a, b) => {
-      const aValue = a[field];
-      const bValue = b[field];
+      const direction = order === 'asc' ? 1 : -1;
 
-      switch (sortType) {
-      case 'number':
-        return direction * compareNumbers(aValue, bValue);
-      case 'string':
-        return direction * compareStrings(aValue, bValue);
-      default:
-        throw new Error(`Unsupported sort type "{${sortType}"`);
-      }
+      return direction * compare(a[field], b[field], sortType);
     });
 
     return sortedData;
