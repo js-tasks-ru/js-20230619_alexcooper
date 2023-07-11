@@ -6,12 +6,10 @@ export default class Tooltip {
   element;
 
   #onPointerOver = (event) => {
-    const element = event.target.closest('[data-tooltip]');
+    const tooltipText = event.target.dataset.tooltip;
 
-    if (element) {
-      const text = element.dataset.tooltip;
-
-      this.render(text);
+    if (tooltipText) {
+      this.render(tooltipText);
     }
   }
 
