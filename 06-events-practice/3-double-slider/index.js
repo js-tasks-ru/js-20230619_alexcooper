@@ -130,7 +130,7 @@ export default class DoubleSlider {
     this.formatValue = formatValue;
     this.selected = selected;
 
-    this.#render();
+    this.#initialize();
   }
 
   get #template() {
@@ -154,15 +154,15 @@ export default class DoubleSlider {
   #render() {
     this.element = createElementFromString(this.#template);
     this.#subElements = this.#getSubElements();
-
-    this.element.ondragstart = () => false;
-
-    this.#addEventListeners();
-
-    this.#initialize();
   }
 
   #initialize() {
+    this.#render();
+
+    this.#addEventListeners();
+
+    this.element.ondragstart = () => false;
+
     const {
       progress: progressElement,
       thumbLeft: thumbLeftElement,
@@ -171,14 +171,14 @@ export default class DoubleSlider {
 
     const rangeInterval = this.max - this.min;
 
-    const left = Math.floor((this.selected.from - this.min) / rangeInterval * 100) + '%';
-    const right = Math.floor((this.max - this.selected.to) / rangeInterval * 100) + '%';
+    const leftPercent = Math.floor((this.selected.from - this.min) / rangeInterval * 100) + '%';
+    const rightPercent = Math.floor((this.max - this.selected.to) / rangeInterval * 100) + '%';
 
-    progressElement.style.left = left;
-    progressElement.style.right = right;
+    progressElement.style.left = leftPercent;
+    progressElement.style.right = rightPercent;
 
-    thumbLeftElement.style.left = left;
-    thumbRightElement.style.right = right;
+    thumbLeftElement.style.left = leftPercent;
+    thumbRightElement.style.right = rightPercent;
   }
 
   #getSubElements() {
