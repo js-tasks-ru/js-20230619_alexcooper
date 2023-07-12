@@ -219,6 +219,5 @@ export default class DoubleSlider {
     this.#remove();
 
     this.element = null;
-    this.#subElements = {};
   }
 }
