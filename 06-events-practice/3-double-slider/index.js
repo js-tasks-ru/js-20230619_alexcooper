@@ -134,19 +134,15 @@ export default class DoubleSlider {
   }
 
   get #template() {
-    const { from, to } = this.selected;
-    const fromText = this.formatValue(from);
-    const toText = this.formatValue(to);
-
     return `
       <div class="range-slider">
-        <span data-element="from">${fromText}</span>
+        <span data-element="from"></span>
         <div data-element="inner" class="range-slider__inner">
           <span data-element="progress" class="range-slider__progress"></span>
           <span data-element="thumbLeft" class="range-slider__thumb-left"></span>
           <span data-element="thumbRight" class="range-slider__thumb-right"></span>
         </div>
-        <span data-element="to">${toText}</span>
+        <span data-element="to"></span>
       </div>
     `;
   }
@@ -167,6 +163,8 @@ export default class DoubleSlider {
       progress: progressElement,
       thumbLeft: thumbLeftElement,
       thumbRight: thumbRightElement,
+      from: fromElement,
+      to: toElement,
     } = this.#subElements;
 
     const rangeInterval = this.max - this.min;
@@ -179,6 +177,12 @@ export default class DoubleSlider {
 
     thumbLeftElement.style.left = leftPercent;
     thumbRightElement.style.right = rightPercent;
+
+
+    const { from, to } = this.selected;
+
+    fromElement.textContent = this.formatValue(from);
+    toElement.textContent = this.formatValue(to);
   }
 
   #getSubElements() {
