@@ -132,11 +132,13 @@ export default class SortableTable {
       return sortedData;
     }
 
-    sortedData.sort((a, b) => {
+    const dataCompareFunction = (a, b) => {
       const direction = order === 'asc' ? 1 : -1;
 
       return direction * compare(a[field], b[field], sortType);
-    });
+    };
+
+    sortedData.sort(dataCompareFunction);
 
     return sortedData;
   }
