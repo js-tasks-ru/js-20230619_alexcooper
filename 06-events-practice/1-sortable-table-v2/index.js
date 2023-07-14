@@ -46,13 +46,11 @@ export default class SortableTable {
   }
 
   #getTableHeaderHTML() {
-    const tableRowsHTML = this.headerConfig
-      .map(this.#getTableHeaderRowHTML)
-      .join('');
+    const tableRows = this.headerConfig.map(this.#getTableHeaderRowHTML);
 
     return `
       <div data-element="header" class="sortable-table__header sortable-table__row">
-        ${tableRowsHTML}
+        ${tableRows}
       </div>
     `;
   }
