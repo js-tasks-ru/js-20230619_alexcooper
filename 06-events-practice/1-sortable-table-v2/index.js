@@ -6,7 +6,7 @@ export default class SortableTable {
   subElements = {};
   sortedColumnElement;
 
-  #onSortClick = (event) => {
+  #onHeaderPointerDown = (event) => {
     const columnElement = event.target.closest('[data-sortable="true"]');
 
     if (!columnElement) {
@@ -47,7 +47,7 @@ export default class SortableTable {
 
   #getTableHeaderHTML() {
     const tableRowsHTML = this.headerConfig
-      .map(options => this.#getTableHeaderRowHTML(options))
+      .map(this.#getTableHeaderRowHTML)
       .join('');
 
     return `
@@ -71,22 +71,20 @@ export default class SortableTable {
   #getTableBodyHTML() {
     return `
       <div data-element="body" class="sortable-table__body">
-        ${this.#getTableBodyRowsHTML()}
+        ${this.#getTableBodyRows()}
       </div>
     `;
   }
 
-  #getTableBodyRowsHTML(data = this.data) {
-    return data.map(rowData => {
-      return `
+  #getTableBodyRows(data = this.data) {
+    return data.map(rowData => (`
         <a href="/products/${rowData.id}" class="sortable-table__row">
-            ${this.#getTableBodyRowHTML(rowData)}
+            ${this.#getTableBodyRow(rowData)}
         </a>
-      `;
-    }).join('');
+    `));
   }
 
-  #getTableBodyRowHTML(rowData) {
+  #getTableBodyRow(rowData) {
     return this.headerConfig.map(({id, template}) => {
       const value = rowData[id];
 
@@ -95,7 +93,7 @@ export default class SortableTable {
       }
 
       return `<div class="sortable-table__cell">${value}</div>`;
-    }).join('');
+    });
   }
 
   #render() {
@@ -146,7 +144,7 @@ export default class SortableTable {
   #sortOnClient(field, order) {
     const sortedData = this.#sortData(field, order);
 
-    this.subElements.body.innerHTML = this.#getTableBodyRowsHTML(sortedData);
+    this.subElements.body.innerHTML = this.#getTableBodyRows(sortedData);
 
     this.#updateColumnSortedElement(field, order);
   }
@@ -167,14 +165,14 @@ export default class SortableTable {
   }
 
   #addEventListeners() {
-    this.subElements.header.addEventListener('pointerdown', this.#onSortClick);
+    this.subElements.header.addEventListener('pointerdown', this.#onHeaderPointerDown);
   }
 
   #removeEventListeners() {
     const headerElement = this.subElements.header;
 
     if (headerElement) {
-      headerElement.removeEventListener('pointerdown', this.#onSortClick);
+      headerElement.removeEventListener('pointerdown', this.#onHeaderPointerDown);
     }
   }
 

@@ -5,7 +5,7 @@ export default class Tooltip {
 
   element;
 
-  #onPointerOver = (event) => {
+  #onDocumentPointerOver = (event) => {
     const tooltipText = event.target.dataset.tooltip;
 
     if (tooltipText) {
@@ -13,11 +13,11 @@ export default class Tooltip {
     }
   }
 
-  #onPointerOut = () => {
+  #onDocumentPointerOut = () => {
     this.#remove();
   }
 
-  #onPointerMove = (event) => {
+  #onDocumentPointerMove = (event) => {
     if (!this.element) {
       return;
     }
@@ -38,15 +38,15 @@ export default class Tooltip {
   }
 
   #addEventListeners() {
-    document.addEventListener('pointerover', this.#onPointerOver);
-    document.addEventListener('pointerout', this.#onPointerOut);
-    document.addEventListener('pointermove', this.#onPointerMove);
+    document.addEventListener('pointerover', this.#onDocumentPointerOver);
+    document.addEventListener('pointerout', this.#onDocumentPointerOut);
+    document.addEventListener('pointermove', this.#onDocumentPointerMove);
   }
 
   #removeEventListeners() {
-    document.removeEventListener('pointerover', this.#onPointerOver);
-    document.removeEventListener('pointerout', this.#onPointerOut);
-    document.removeEventListener('pointermove', this.#onPointerMove);
+    document.removeEventListener('pointerover', this.#onDocumentPointerOver);
+    document.removeEventListener('pointerout', this.#onDocumentPointerOut);
+    document.removeEventListener('pointermove', this.#onDocumentPointerMove);
   }
 
   render(text) {

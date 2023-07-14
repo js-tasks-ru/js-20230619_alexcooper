@@ -9,6 +9,11 @@ export default class DoubleSlider {
   #draggingElement;
   #shiftX;
 
+  static ThumbType = {
+    Left: Symbol('left'),
+    Right: Symbol('right'),
+  }
+
   get range() {
     const {
       thumbLeft: thumbLeftElement,
@@ -26,7 +31,7 @@ export default class DoubleSlider {
     return { from, to };
   }
 
-  #onPointerDown = (event) => {
+  #onThumbPointerDown = (event) => {
     const element = event.target;
 
     const { thumbLeft: thumbLeftElement } = this.#subElements;
@@ -44,18 +49,15 @@ export default class DoubleSlider {
 
     this.#draggingElement = element;
 
-    document.addEventListener('pointermove', this.#onPointerMove);
-    document.addEventListener('pointerup', this.#onPointerUp);
+    document.addEventListener('pointermove', this.#onDocumentPointerMove);
+    document.addEventListener('pointerup', this.#onDocumentPointerUp);
   }
 
-  #onPointerMove = (event) => {
+  #onDocumentPointerMove = (event) => {
     const {
       inner: innerElement,
       thumbLeft: thumbLeftElement,
       thumbRight: thumbRightElement,
-      from: fromElement,
-      to: toElement,
-      progress: progressElement,
     } = this.#subElements;
 
     const {
@@ -64,51 +66,34 @@ export default class DoubleSlider {
       width: innerWidth
     } = innerElement.getBoundingClientRect();
 
-    const isLeftThumb = this.#draggingElement === thumbLeftElement;
-    const isRightThumb = this.#draggingElement === thumbRightElement;
+    const thumbType = this.#draggingElement === thumbLeftElement
+      ? DoubleSlider.ThumbType.Left
+      : DoubleSlider.ThumbType.Right;
 
-    if (isLeftThumb) {
-      let leftPercent = (event.clientX - innerLeft + this.#shiftX) / innerWidth * 100;
+    const anotherThumbPositionOffset = thumbType === DoubleSlider.ThumbType.Left
+      ? parseFloat(thumbRightElement.style.right)
+      : parseFloat(thumbLeftElement.style.left);
 
-      if (leftPercent < 0) {
-        leftPercent = 0;
-      }
+    let positionOffset = thumbType === DoubleSlider.ThumbType.Left
+      ? (event.clientX - innerLeft + this.#shiftX) / innerWidth * 100
+      : (innerRight - event.clientX + this.#shiftX) / innerWidth * 100;
 
-      const rightPercent = parseFloat(thumbRightElement.style.right);
-      if (leftPercent + rightPercent > 100) {
-        leftPercent = 100 - rightPercent;
-      }
+    positionOffset = Math.max(0, positionOffset);
 
-      thumbLeftElement.style.left = `${leftPercent}%`;
-      progressElement.style.left = `${leftPercent}%`;
-      fromElement.textContent = this.formatValue(this.range.from);
+    if (positionOffset + anotherThumbPositionOffset > 100) {
+      positionOffset = 100 - anotherThumbPositionOffset;
     }
 
-    if (isRightThumb) {
-      let rightPercent = (innerRight - event.clientX + this.#shiftX) / innerWidth * 100;
-
-      if (rightPercent < 0) {
-        rightPercent = 0;
-      }
-
-      const leftPercent = parseFloat(thumbLeftElement.style.left);
-      if (leftPercent + rightPercent > 100) {
-        rightPercent = 100 - leftPercent;
-      }
-
-      thumbRightElement.style.right = `${rightPercent}%`;
-      progressElement.style.right = `${rightPercent}%`;
-      toElement.textContent = this.formatValue(this.range.to);
-    }
+    this.#updateThumbPositionOffset(positionOffset, thumbType);
   }
 
-  #onPointerUp = () => {
+  #onDocumentPointerUp = () => {
     const thumbElement = this.#draggingElement;
 
     thumbElement.classList.remove(SLIDER_IS_DRAGGING_CLASS_NAME);
 
-    document.removeEventListener('pointermove', this.#onPointerMove);
-    document.removeEventListener('pointerup', this.#onPointerUp);
+    document.removeEventListener('pointermove', this.#onDocumentPointerMove);
+    document.removeEventListener('pointerup', this.#onDocumentPointerUp);
 
     this.element.dispatchEvent(new CustomEvent('range-select', {
       detail: this.range,
@@ -195,21 +180,43 @@ export default class DoubleSlider {
     }, {});
   }
 
+  #updateThumbPositionOffset(positionOffset, thumbType) {
+    const {
+      from: fromElement,
+      to: toElement,
+      progress: progressElement,
+      thumbLeft: thumbLeftElement,
+      thumbRight: thumbRightElement,
+    } = this.#subElements;
+
+    if (thumbType === DoubleSlider.ThumbType.Left) {
+      thumbLeftElement.style.left = `${positionOffset}%`;
+      progressElement.style.left = `${positionOffset}%`;
+      fromElement.textContent = this.formatValue(this.range.from);
+    }
+
+    if (thumbType === DoubleSlider.ThumbType.Right) {
+      thumbRightElement.style.right = `${positionOffset}%`;
+      progressElement.style.right = `${positionOffset}%`;
+      toElement.textContent = this.formatValue(this.range.to);
+    }
+  }
+
   #addEventListeners() {
     const { thumbLeft: thumbLeftElement, thumbRight: thumbRightElement } = this.#subElements;
 
-    thumbLeftElement.addEventListener('pointerdown', this.#onPointerDown);
-    thumbRightElement.addEventListener('pointerdown', this.#onPointerDown);
+    thumbLeftElement.addEventListener('pointerdown', this.#onThumbPointerDown);
+    thumbRightElement.addEventListener('pointerdown', this.#onThumbPointerDown);
   }
 
   #removeEventListeners() {
     const { thumbLeft: thumbLeftElement, thumbRight: thumbRightElement } = this.#subElements;
 
-    thumbLeftElement.removeEventListener('pointerdown', this.#onPointerDown);
-    thumbRightElement.removeEventListener('pointerdown', this.#onPointerDown);
+    thumbLeftElement.removeEventListener('pointerdown', this.#onThumbPointerDown);
+    thumbRightElement.removeEventListener('pointerdown', this.#onThumbPointerDown);
 
-    document.removeEventListener('pointermove', this.#onPointerMove);
-    document.removeEventListener('pointerup', this.#onPointerUp);
+    document.removeEventListener('pointermove', this.#onDocumentPointerMove);
+    document.removeEventListener('pointerup', this.#onDocumentPointerUp);
   }
 
   #remove() {
