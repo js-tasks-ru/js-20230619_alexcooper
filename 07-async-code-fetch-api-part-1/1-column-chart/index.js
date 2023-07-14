@@ -49,14 +49,14 @@ export default class ColumnChart {
   }
 
   #getHeaderHTML() {
-    const values = Object.values(this.data);
-    const total = values.reduce((accum, value) => {
+    const chartDataValues = Object.values(this.data);
+    const chartTotalNumber = chartDataValues.reduce((accum, value) => {
       return accum + value;
     }, 0);
 
     return this.formatHeading
-      ? this.formatHeading(total)
-      : total;
+      ? this.formatHeading(chartTotalNumber)
+      : chartTotalNumber;
   }
 
   #getLinkHTML() {
