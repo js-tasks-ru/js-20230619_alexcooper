@@ -46,7 +46,9 @@ export default class SortableTable {
   }
 
   #getTableHeaderHTML() {
-    const tableRows = this.headerConfig.map(this.#getTableHeaderRowHTML);
+    const tableRows = this.headerConfig
+      .map(this.#getTableHeaderRowHTML)
+      .join('');
 
     return `
       <div data-element="header" class="sortable-table__header sortable-table__row">
@@ -69,20 +71,20 @@ export default class SortableTable {
   #getTableBodyHTML() {
     return `
       <div data-element="body" class="sortable-table__body">
-        ${this.#getTableBodyRows()}
+        ${this.#getTableBodyRowsHTML()}
       </div>
     `;
   }
 
-  #getTableBodyRows(data = this.data) {
+  #getTableBodyRowsHTML(data = this.data) {
     return data.map(rowData => (`
         <a href="/products/${rowData.id}" class="sortable-table__row">
-            ${this.#getTableBodyRow(rowData)}
+            ${this.#getTableBodyRowHTML(rowData)}
         </a>
-    `));
+    `)).join('');
   }
 
-  #getTableBodyRow(rowData) {
+  #getTableBodyRowHTML(rowData) {
     return this.headerConfig.map(({id, template}) => {
       const value = rowData[id];
 
@@ -91,7 +93,7 @@ export default class SortableTable {
       }
 
       return `<div class="sortable-table__cell">${value}</div>`;
-    });
+    }).join('');
   }
 
   #render() {
@@ -142,7 +144,7 @@ export default class SortableTable {
   #sortOnClient(field, order) {
     const sortedData = this.#sortData(field, order);
 
-    this.subElements.body.innerHTML = this.#getTableBodyRows(sortedData);
+    this.subElements.body.innerHTML = this.#getTableBodyRowsHTML(sortedData);
 
     this.#updateColumnSortedElement(field, order);
   }
