@@ -172,8 +172,9 @@ export default class DoubleSlider {
 
   #getSubElements() {
     const elements = this.element.querySelectorAll('[data-element]');
+    const items = Array.from(elements);
 
-    return [...elements].reduce((accum, subElement) => {
+    return items.reduce((accum, subElement) => {
       accum[subElement.dataset.element] = subElement;
 
       return accum;
