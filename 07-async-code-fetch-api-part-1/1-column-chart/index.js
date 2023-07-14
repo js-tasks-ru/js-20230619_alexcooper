@@ -1,6 +1,5 @@
 import fetchJson from './utils/fetch-json.js';
 import createElementFromString from "../../lib/create-element.js";
-import * as url from "url";
 
 const BACKEND_URL = 'https://course-js.javascript.ru';
 const CHART_IS_LOADING_CLASS = 'column-chart_loading';
@@ -118,7 +117,7 @@ export default class ColumnChart {
   async #loadData(dateFrom, dateTo) {
     this.#setURLParams(dateFrom, dateTo);
 
-    this.data = await fetchJson(url);
+    this.data = await fetchJson(this.url);
   }
 
   async update(dateFrom, dateTo) {
