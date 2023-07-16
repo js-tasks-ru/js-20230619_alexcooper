@@ -2,7 +2,6 @@ import fetchJson from './utils/fetch-json.js';
 import createElementFromString from "../../lib/create-element.js";
 
 const BACKEND_URL = 'https://course-js.javascript.ru';
-const CHART_IS_LOADING_CLASS = 'column-chart_loading';
 
 export default class ColumnChart {
   element;
@@ -10,14 +9,13 @@ export default class ColumnChart {
   data = {};
   chartHeight = 50;
 
-  get #isDataEmpty() {
-    return Object.keys(this.data).length === 0;
-  }
+  static #defaultFormatHeading = text => text;
+  static #chartIsLoadingClass = 'column-chart_loading';
 
   constructor({
     label = '',
     link,
-    formatHeading = text => text,
+    formatHeading = ColumnChart.#defaultFormatHeading,
     url,
     range = {
       from: new Date(),
@@ -27,7 +25,7 @@ export default class ColumnChart {
     this.label = label;
     this.link = link;
     this.formatHeading = formatHeading;
-    this.url = new URL(url, BACKEND_URL);
+    this.url = url;
     this.range = range;
 
     this.#initialize();
@@ -35,7 +33,7 @@ export default class ColumnChart {
 
   get #template() {
     return `
-      <div class="column-chart ${CHART_IS_LOADING_CLASS}" style="--chart-height: ${this.chartHeight}">
+      <div class="column-chart ${ColumnChart.#chartIsLoadingClass}" style="--chart-height: ${this.chartHeight}">
         <div class="column-chart__title">
           Total ${this.label}
           ${this.#getLinkHTML()}
@@ -50,9 +48,7 @@ export default class ColumnChart {
 
   #getHeaderHTML() {
     const chartDataValues = Object.values(this.data);
-    const chartTotalNumber = chartDataValues.reduce((accum, value) => {
-      return accum + value;
-    }, 0);
+    const chartTotalNumber = chartDataValues.reduce((acc, value) => acc + value, 0);
 
     return this.formatHeading
       ? this.formatHeading(chartTotalNumber)
@@ -102,30 +98,28 @@ export default class ColumnChart {
   }
 
   #updateLoadingClass(isLoading = false) {
-    if (!isLoading && !this.#isDataEmpty) {
-      this.element.classList.remove(CHART_IS_LOADING_CLASS);
+    if (!isLoading) {
+      this.element.classList.remove(ColumnChart.#chartIsLoadingClass);
     } else {
-      this.element.classList.add(CHART_IS_LOADING_CLASS);
+      this.element.classList.add(ColumnChart.#chartIsLoadingClass);
     }
   }
 
-  #setURLParams(dateFrom, dateTo) {
-    this.url.searchParams.set('from', dateFrom.toISOString());
-    this.url.searchParams.set('to', dateTo.toISOString());
-  }
+  async #getDataFromServer(dateFrom, dateTo) {
+    const url = new URL(this.url, BACKEND_URL);
 
-  async #loadData(dateFrom, dateTo) {
-    this.#setURLParams(dateFrom, dateTo);
+    url.searchParams.set('from', dateFrom.toISOString());
+    url.searchParams.set('to', dateTo.toISOString());
 
-    this.data = await fetchJson(this.url);
+    return await fetchJson(url);
   }
 
   async update(dateFrom, dateTo) {
     this.#updateLoadingClass(true);
 
-    await this.#loadData(dateFrom, dateTo);
+    this.data = await this.#getDataFromServer(dateFrom, dateTo);
 
-    if (this.#isDataEmpty) {
+    if (Object.keys(this.data).length === 0) {
       return {};
     }
 
