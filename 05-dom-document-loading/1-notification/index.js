@@ -1,24 +1,26 @@
-import createElementFromString from '../../lib/create-element.js';
+import { BaseComponent } from "../../lib/components.js";
 
-export default class NotificationMessage {
+export default class NotificationMessage extends BaseComponent {
   static activeNotification;
 
   constructor(message, {
     duration = 250,
     type = 'success'
   } = {}) {
+    super();
+
     this.message = message;
     this.messageType = type;
     this.duration = duration;
 
-    this.#render();
+    this.initialize();
   }
 
   get durationInSeconds() {
     return this.duration / 1000;
   }
 
-  get #template() {
+  getTemplate() {
     return `
       <div class="notification ${this.messageType}" style="--value: ${this.durationInSeconds}s">
         <div class="timer"></div>
@@ -32,14 +34,14 @@ export default class NotificationMessage {
     `;
   }
 
-  #render() {
+  initialize() {
     if (NotificationMessage.activeNotification) {
       NotificationMessage.activeNotification.destroy();
     }
 
-    this.element = createElementFromString(this.#template);
-
     NotificationMessage.activeNotification = this;
+
+    super.initialize();
   }
 
   show(container = document.body) {
@@ -50,15 +52,9 @@ export default class NotificationMessage {
     }, this.duration);
   }
 
-  remove() {
-    if (this.element) {
-      this.element.remove();
-    }
-  }
-
   destroy() {
-    this.remove();
-    this.element = null;
+    super.destroy();
+
     NotificationMessage.activeNotification = null;
   }
 }

@@ -1,9 +1,7 @@
+import { BaseComponent } from "../../lib/components.js";
 import fetchJson from './utils/fetch-json.js';
-import createElementFromString from "../../lib/create-element.js";
 
-const BACKEND_URL = 'https://course-js.javascript.ru';
-
-export default class ColumnChart {
+export default class ColumnChart extends BaseComponent {
   element;
   subElements;
   data = {};
@@ -22,16 +20,18 @@ export default class ColumnChart {
       to: new Date(),
     }
   } = {}) {
+    super();
+
     this.label = label;
     this.link = link;
     this.formatHeading = formatHeading;
     this.url = url;
     this.range = range;
 
-    this.#initialize();
+    this.initialize();
   }
 
-  get #template() {
+  getTemplate() {
     return `
       <div class="column-chart ${ColumnChart.#chartIsLoadingClass}" style="--chart-height: ${this.chartHeight}">
         <div class="column-chart__title">
@@ -75,26 +75,10 @@ export default class ColumnChart {
       .join('');
   }
 
-  #initialize() {
-    this.#render();
-    this.subElements = this.#getSubElements();
+  initialize() {
+    super.initialize();
 
     this.update(this.range.from, this.range.to);
-  }
-
-  #render() {
-    this.element = createElementFromString(this.#template);
-  }
-
-  #getSubElements() {
-    const elements = this.element.querySelectorAll('[data-element]');
-    const items = Array.from(elements);
-
-    return items.reduce((accum, subElement) => {
-      accum[subElement.dataset.element] = subElement;
-
-      return accum;
-    }, {});
   }
 
   #updateLoadingClass(isLoading = false) {
@@ -106,7 +90,7 @@ export default class ColumnChart {
   }
 
   async #getDataFromServer(dateFrom, dateTo) {
-    const url = new URL(this.url, BACKEND_URL);
+    const url = new URL(this.url, ColumnChart.backendURL);
 
     url.searchParams.set('from', dateFrom.toISOString());
     url.searchParams.set('to', dateTo.toISOString());
@@ -134,14 +118,5 @@ export default class ColumnChart {
     this.#updateLoadingClass(false);
 
     return this.data;
-  }
-
-  remove() {
-    this.element.remove();
-  }
-
-  destroy() {
-    this.remove();
-    this.data = null;
   }
 }

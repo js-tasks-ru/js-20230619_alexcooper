@@ -1,4 +1,4 @@
-import createElementFromString from '../../lib/create-element.js';
+import { BaseComponent } from "../../lib/components.js";
 import { compare } from '../../lib/sort.js';
 
 export default class SortableTable {
@@ -101,7 +101,7 @@ export default class SortableTable {
 
     this.data = this.#sortData(field, order);
 
-    this.element = createElementFromString(this.#template);
+    this.element = BaseComponent.createElement(this.#template);
     this.subElements = this.#getSubElements(this.element);
 
     this.#updateColumnSortedElement(field, order);

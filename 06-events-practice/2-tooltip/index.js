@@ -1,6 +1,8 @@
+import { BaseComponent } from "../../lib/components.js";
+
 const TOOLTIP_POSITION_OFFSET = 10;
 
-export default class Tooltip {
+export default class Tooltip extends BaseComponent {
   static #instance;
 
   element;
@@ -14,7 +16,7 @@ export default class Tooltip {
   }
 
   #onDocumentPointerOut = () => {
-    this.#remove();
+    this.remove();
   }
 
   #onDocumentPointerMove = (event) => {
@@ -30,6 +32,8 @@ export default class Tooltip {
   }
 
   constructor() {
+    super();
+
     if (Tooltip.#instance) {
       return Tooltip.#instance;
     }
@@ -37,39 +41,29 @@ export default class Tooltip {
     Tooltip.#instance = this;
   }
 
-  #addEventListeners() {
+  addEventListeners() {
     document.addEventListener('pointerover', this.#onDocumentPointerOver);
     document.addEventListener('pointerout', this.#onDocumentPointerOut);
     document.addEventListener('pointermove', this.#onDocumentPointerMove);
   }
 
-  #removeEventListeners() {
+  removeEventListeners() {
     document.removeEventListener('pointerover', this.#onDocumentPointerOver);
     document.removeEventListener('pointerout', this.#onDocumentPointerOut);
     document.removeEventListener('pointermove', this.#onDocumentPointerMove);
   }
 
-  render(text) {
-    this.element = document.createElement('div');
+  getTemplate(text) {
+    return `<div class="tooltip">${text}</div>`;
+  }
 
-    this.element.classList.add('tooltip');
-    this.element.textContent = text;
+  render(text) {
+    if (!text) {
+      return;
+    }
+
+    super.render(text);
 
     document.body.append(this.element);
-  }
-
-  initialize () {
-    this.#addEventListeners();
-  }
-
-  #remove() {
-    if (this.element) {
-      this.element.remove();
-    }
-  }
-
-  destroy() {
-    this.#removeEventListeners();
-    this.#remove();
   }
 }
