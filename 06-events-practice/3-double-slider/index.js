@@ -1,11 +1,8 @@
-import createElementFromString from '../../lib/create-element.js';
+import { BaseComponent } from "../../lib/components.js";
 
 const SLIDER_IS_DRAGGING_CLASS_NAME = 'range-slider_dragging';
 
-export default class DoubleSlider {
-  element;
-  #subElements = {};
-
+export default class DoubleSlider extends BaseComponent {
   #draggingElement;
   #shiftX;
 
@@ -18,7 +15,7 @@ export default class DoubleSlider {
     const {
       thumbLeft: thumbLeftElement,
       thumbRight: thumbRightElement,
-    } = this.#subElements;
+    } = this.subElements;
 
     const rangeInterval = this.max - this.min;
 
@@ -34,7 +31,7 @@ export default class DoubleSlider {
   #onThumbPointerDown = (event) => {
     const element = event.target;
 
-    const { thumbLeft: thumbLeftElement } = this.#subElements;
+    const { thumbLeft: thumbLeftElement } = this.subElements;
     const isLeftThumb = element === thumbLeftElement;
 
     const { left, right } = element.getBoundingClientRect();
@@ -58,7 +55,7 @@ export default class DoubleSlider {
       inner: innerElement,
       thumbLeft: thumbLeftElement,
       thumbRight: thumbRightElement,
-    } = this.#subElements;
+    } = this.subElements;
 
     const {
       left: innerLeft,
@@ -110,15 +107,17 @@ export default class DoubleSlider {
       to: max
     }
   } = {}) {
+    super();
+
     this.min = min;
     this.max = max;
     this.formatValue = formatValue;
     this.selected = selected;
 
-    this.#initialize();
+    this.initialize();
   }
 
-  get #template() {
+  getTemplate() {
     return `
       <div class="range-slider">
         <span data-element="from"></span>
@@ -132,15 +131,8 @@ export default class DoubleSlider {
     `;
   }
 
-  #render() {
-    this.element = createElementFromString(this.#template);
-    this.#subElements = this.#getSubElements();
-  }
-
-  #initialize() {
-    this.#render();
-
-    this.#addEventListeners();
+  initialize() {
+    super.initialize();
 
     this.element.ondragstart = () => false;
 
@@ -150,7 +142,7 @@ export default class DoubleSlider {
       thumbRight: thumbRightElement,
       from: fromElement,
       to: toElement,
-    } = this.#subElements;
+    } = this.subElements;
 
     const rangeInterval = this.max - this.min;
 
@@ -170,17 +162,6 @@ export default class DoubleSlider {
     toElement.textContent = this.formatValue(to);
   }
 
-  #getSubElements() {
-    const elements = this.element.querySelectorAll('[data-element]');
-    const items = Array.from(elements);
-
-    return items.reduce((accum, subElement) => {
-      accum[subElement.dataset.element] = subElement;
-
-      return accum;
-    }, {});
-  }
-
   #updateThumbPositionOffset(positionOffset, thumbType) {
     const {
       from: fromElement,
@@ -188,7 +169,7 @@ export default class DoubleSlider {
       progress: progressElement,
       thumbLeft: thumbLeftElement,
       thumbRight: thumbRightElement,
-    } = this.#subElements;
+    } = this.subElements;
 
     if (thumbType === DoubleSlider.ThumbType.Left) {
       thumbLeftElement.style.left = `${positionOffset}%`;
@@ -203,33 +184,20 @@ export default class DoubleSlider {
     }
   }
 
-  #addEventListeners() {
-    const { thumbLeft: thumbLeftElement, thumbRight: thumbRightElement } = this.#subElements;
+  addEventListeners() {
+    const { thumbLeft: thumbLeftElement, thumbRight: thumbRightElement } = this.subElements;
 
     thumbLeftElement.addEventListener('pointerdown', this.#onThumbPointerDown);
     thumbRightElement.addEventListener('pointerdown', this.#onThumbPointerDown);
   }
 
-  #removeEventListeners() {
-    const { thumbLeft: thumbLeftElement, thumbRight: thumbRightElement } = this.#subElements;
+  removeEventListeners() {
+    const { thumbLeft: thumbLeftElement, thumbRight: thumbRightElement } = this.subElements;
 
     thumbLeftElement.removeEventListener('pointerdown', this.#onThumbPointerDown);
     thumbRightElement.removeEventListener('pointerdown', this.#onThumbPointerDown);
 
     document.removeEventListener('pointermove', this.#onDocumentPointerMove);
     document.removeEventListener('pointerup', this.#onDocumentPointerUp);
-  }
-
-  #remove() {
-    if (this.element) {
-      this.element.remove();
-    }
-  }
-
-  destroy() {
-    this.#removeEventListeners();
-    this.#remove();
-
-    this.element = null;
   }
 }

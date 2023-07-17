@@ -1,10 +1,7 @@
-import createElementFromString from '../../lib/create-element.js';
+import { BaseComponent } from "../../lib/components.js";
 import fetchJson from './utils/fetch-json.js';
-import { compare } from '../../lib/sort.js';
 
-const BACKEND_URL = 'https://course-js.javascript.ru';
-
-export default class SortableTable {
+export default class SortableTable extends BaseComponent {
   element;
   subElements = {};
   sortedColumnElement;
@@ -45,7 +42,7 @@ export default class SortableTable {
       this.start = this.end;
       this.end = this.start + this.step;
 
-      await this.updateFromServer(
+      await this.update(
         this.sorted.id,
         this.sorted.order,
         this.start,
@@ -65,6 +62,8 @@ export default class SortableTable {
     end = start + step,
     isSortLocally = false
   } = {}) {
+    super();
+
     this.url = url;
     this.headerConfig = headerConfig;
     this.sorted = sorted;
@@ -75,10 +74,10 @@ export default class SortableTable {
 
     this.data = [];
 
-    this.render();
+    this.initialize();
   }
 
-  get #template() {
+  getTemplate() {
     return `
       <div class="sortable-table">
         ${this.#getTableHeaderHTML()}
@@ -140,31 +139,15 @@ export default class SortableTable {
     }).join('');
   }
 
-  async render() {
-    this.element = createElementFromString(this.#template);
-    this.subElements = this.#getSubElements(this.element);
+  async initialize() {
+    super.initialize();
 
-    await this.updateFromServer(
+    await this.update(
       this.sorted.id,
       this.sorted.order,
       this.start,
       this.end,
     );
-
-    this.#addEventListeners();
-  }
-
-  #getSubElements(element) {
-    const subElements = {};
-    const elements = element.querySelectorAll('[data-element]');
-
-    elements.forEach(element => {
-      const elementName = element.dataset.element;
-
-      subElements[elementName] = element;
-    });
-
-    return subElements;
   }
 
   #sortData(field, order) {
@@ -200,7 +183,7 @@ export default class SortableTable {
     const start = 0;
     const end = this.start + this.step;
 
-    await this.updateFromServer(
+    await this.update(
       fieldId,
       order,
       start,
@@ -222,29 +205,23 @@ export default class SortableTable {
     this.sortedColumnElement = sortedColumnElement;
   }
 
-  #addEventListeners() {
+  addEventListeners() {
     document.addEventListener('scroll', this.#onWindowScroll);
 
     this.subElements.header.addEventListener('pointerdown', this.#onHeaderPointerDown);
   }
 
-  #removeEventListeners() {
+  removeEventListeners() {
     document.removeEventListener('scroll', this.#onWindowScroll);
 
-    const headerElement = this.subElements.header;
+    const headerElement = this.subElements?.header;
     if (headerElement) {
       headerElement.removeEventListener('pointerdown', this.#onHeaderPointerDown);
     }
   }
 
-  #remove() {
-    if (this.element) {
-      this.element.remove();
-    }
-  }
-
   async #getDataFromServer(sortFieldId, sortOrder, start, end) {
-    const url = new URL(this.url, BACKEND_URL);
+    const url = new URL(this.url, SortableTable.backendURL);
 
     url.searchParams.set('_sort', sortFieldId);
     url.searchParams.set('_order', sortOrder);
@@ -270,9 +247,9 @@ export default class SortableTable {
     }
   }
 
-  async updateFromServer(
-    sortField,
-    sortOrder,
+  async update(
+    sortField = this.sorted.id,
+    sortOrder = this.sorted.order,
     start = this.start,
     end = this.end,
     append = true,
@@ -305,13 +282,5 @@ export default class SortableTable {
     } else {
       this.sortOnServer(field, order);
     }
-  }
-
-  destroy() {
-    this.#remove();
-    this.#removeEventListeners();
-
-    this.data = null;
-    this.subElements = {};
   }
 }

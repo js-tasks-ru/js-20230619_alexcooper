@@ -1,10 +1,9 @@
-import createElementFromString from '../../lib/create-element.js';
+import { BaseComponent } from "../../lib/components.js";
 
 const CHART_IS_LOADING_CLASS = 'column-chart_loading';
 const CHART_BODY_CLASS = 'column-chart__chart';
 
-export default class ColumnChart {
-  element;
+export default class ColumnChart extends BaseComponent {
   chartHeight = 50;
 
   constructor({
@@ -14,16 +13,18 @@ export default class ColumnChart {
     link,
     formatHeading
   } = {}) {
+    super();
+
     this.data = data;
     this.label = label;
     this.value = value;
     this.link = link;
     this.formatHeading = formatHeading;
 
-    this.#render();
+    this.initialize();
   }
 
-  get #template() {
+  getTemplate() {
     return `
       <div class="column-chart ${CHART_IS_LOADING_CLASS}" style="--chart-height: ${this.chartHeight}">
         <div class="column-chart__title">
@@ -66,8 +67,8 @@ export default class ColumnChart {
       .join('');
   }
 
-  #render() {
-    this.element = createElementFromString(this.#template);
+  render() {
+    super.render();
 
     this.#updateLoadingState();
   }
@@ -88,12 +89,9 @@ export default class ColumnChart {
     this.#updateLoadingState();
   }
 
-  remove() {
-    this.element.remove();
-  }
-
   destroy() {
-    this.remove();
+    super.destroy();
+
     this.data = null;
   }
 }

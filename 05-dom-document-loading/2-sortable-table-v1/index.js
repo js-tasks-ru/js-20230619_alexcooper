@@ -1,4 +1,4 @@
-import createElementFromString from '../../lib/create-element.js';
+import { BaseComponent } from "../../lib/components.js";
 import { compare } from '../../lib/sort.js';
 
 export default class SortableTable {
@@ -76,7 +76,7 @@ export default class SortableTable {
   }
 
   #render() {
-    this.element = createElementFromString(this.#template);
+    this.element = BaseComponent.createElement(this.#template);
     this.subElements = this.#getSubElements(this.element);
   }
 
