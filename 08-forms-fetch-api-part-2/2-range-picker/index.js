@@ -51,7 +51,7 @@ export default class RangePicker extends BaseComponent {
     const isSelectingTo = !isSelectingFrom;
     const cellElement = event.target;
     const cellDate = new Date(cellElement.dataset.value);
-    const { from: dateSelectedFrom, to: dateSelectedTo } = this.selected;
+    const { from: dateSelectedFrom } = this.selected;
 
     if (isSelectingFrom) {
       this.#setSelected(cellDate, null);
