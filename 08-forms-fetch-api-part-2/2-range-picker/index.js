@@ -8,28 +8,29 @@ export default class RangePicker extends BaseComponent {
 
   selectedDateFrom;
   isSelectingFrom = true;
-  isOpened = false;
+  isOpen = false;
 
+  static elementOpenedClassName = 'rangepicker_open';
   static cellElementClassName = 'rangepicker__cell';
   static cellFromClassName = 'rangepicker__selected-from';
   static cellBetweenClassName = 'rangepicker__selected-between';
   static cellToClassName = 'rangepicker__selected-to';
 
   #onDocumentClick = (event) => {
-    const element = event.target;
-    const selectorElement = this.subElements.selector;
-    const isSelectorElement = selectorElement.contains(element);
+    const isRangePicker = this.element.contains(event.target);
 
-    if (this.isOpened && !isSelectorElement) {
-      this.#toggleOpened();
-
-      event.stopPropagation();
+    if (this.isOpen && !isRangePicker) {
+      this.#close();
     }
   }
 
   #onInputClick = () => {
-    this.#toggleOpened();
-    this.#renderRangePicker();
+    if (!this.isOpen) {
+      this.#open();
+      this.#renderRangePicker();
+    } else {
+      this.#close();
+    }
   }
 
   #onNextIntervalButtonClick = () => {
@@ -72,7 +73,7 @@ export default class RangePicker extends BaseComponent {
     }
 
     if (this.selected.from && this.selected.to) {
-      this.#toggleOpened();
+      this.#close();
       this.#updateSelectedText();
       this.#dispatchEvent();
     }
@@ -265,9 +266,14 @@ export default class RangePicker extends BaseComponent {
     this.selected = { from, to };
   }
 
-  #toggleOpened() {
-    this.element.classList.toggle('rangepicker_open');
-    this.isOpened = !this.isOpened;
+  #open() {
+    this.isOpen = true;
+    this.element.classList.add(RangePicker.elementOpenedClassName);
+  }
+
+  #close() {
+    this.isOpen = false;
+    this.element.classList.remove(RangePicker.elementOpenedClassName);
   }
 
   #updateSelectedText() {
