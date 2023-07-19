@@ -75,7 +75,7 @@ describe('forms-fetch-api-part-2/range-picker', () => {
   });
 
   it('should highlight selected \'from\' and \'to\' dates in calendar', () => {
-    const rangePicker = new RangePicker({
+    rangePicker = new RangePicker({
       from: new Date(2019, 9, 12),
       to: new Date(2019, 10, 25)
     });
@@ -98,7 +98,7 @@ describe('forms-fetch-api-part-2/range-picker', () => {
     const to = new Date(2020, 6, 13);
     const totalDays = getDaysBetweenDates(from, to);
     const RANGE_BORDERS_COUNT = 2;
-    const rangePicker = new RangePicker({from, to});
+    rangePicker = new RangePicker({from, to});
     const input = rangePicker.element.querySelector('.rangepicker__input');
 
     input.dispatchEvent(new MouseEvent('click', {
