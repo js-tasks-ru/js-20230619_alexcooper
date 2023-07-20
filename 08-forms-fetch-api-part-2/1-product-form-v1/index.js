@@ -366,18 +366,4 @@ export default class ProductForm extends BaseComponent {
     imageInputElement.addEventListener('change', this.#onImageInputChange);
     imageListContainerElement.addEventListener('pointerdown', this.#onImageRemovePointerDown);
   }
-
-  removeEventListeners() {
-    const {
-      productForm: productFormElement,
-      uploadImageButton: uploadImageButtonElement,
-      imageInput: imageInputElement,
-      imageListContainer: imageListContainerElement,
-    } = this.subElements;
-
-    productFormElement.removeEventListener('submit', this.#onFormSubmit);
-    uploadImageButtonElement.removeEventListener('pointerdown', this.#onUploadImageButtonPointerDown);
-    imageInputElement.removeEventListener('change', this.#onImageInputChange);
-    imageListContainerElement.removeEventListener('pointerdown', this.#onImageRemovePointerDown);
-  }
 }

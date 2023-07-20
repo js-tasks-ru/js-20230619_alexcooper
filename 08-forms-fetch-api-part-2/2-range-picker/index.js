@@ -303,14 +303,6 @@ export default class RangePicker extends BaseComponent {
   }
 
   removeEventListeners() {
-    const {
-      input: datePickerInputElement,
-      selector: datePickerSelectElement,
-    } = this.subElements;
-
-    datePickerInputElement.removeEventListener('click', this.#onInputClick);
-    datePickerSelectElement.removeEventListener('click', this.#onCellClick);
-
     document.removeEventListener('click', this.#onDocumentClick, true);
   }
 }
