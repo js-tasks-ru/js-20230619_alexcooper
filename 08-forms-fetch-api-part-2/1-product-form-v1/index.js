@@ -96,71 +96,107 @@ export default class ProductForm extends BaseComponent {
       <div class="product-form">
         <form data-element="productForm" class="form-grid">
 
-          <div class="form-group form-group__half_left">
-            <fieldset>
-              <label class="form-label">Название товара</label>
-              <input id="title" type="text" name="title" class="form-control" placeholder="Название товара" required>
-            </fieldset>
-          </div>
+          ${this.#getMainFieldsTemplate()}
 
-          <div class="form-group form-group__wide">
-            <label class="form-label">Описание</label>
-            <textarea id="description" class="form-control" name="description" data-element="productDescription" placeholder="Описание товара"></textarea>
-          </div>
+          ${this.#getPhotoTemplate()}
 
-          <div class="form-group form-group__wide" data-element="sortable-list-container">
-            <label class="form-label">Фото</label>
-            <div data-element="imageListContainer">
-              <ul class="sortable-list" data-element="images"></ul>
-            </div>
+          ${this.#getCategoriesTemplate()}
 
-            <input
-                type="file"
-                accept="image/*"
-                data-element="imageInput"
-                style="clip: rect(0, 0, 0, 0); position: absolute;"
-            >
-            <button type="button" name="uploadImage" class="button-primary-outline" data-element="uploadImageButton">
-              <span>Загрузить</span>
-            </button>
-          </div>
+          ${this.#getPriceTemplate()}
 
-          <div class="form-group form-group__half_left">
-            <label class="form-label">Категория</label>
-            <select id="subcategory" class="form-control" name="subcategory" data-element="categories"></select>
-          </div>
+          ${this.#getQuantityTemplate()}
 
-          <div class="form-group form-group__half_left form-group__two-col">
-
-            <fieldset>
-              <label class="form-label">Цена ($)</label>
-              <input id="price" type="number" name="price" class="form-control" placeholder="100" required>
-            </fieldset>
-
-            <fieldset>
-              <label class="form-label">Скидка ($)</label>
-              <input id="discount" type="number" name="discount" class="form-control" placeholder="0" required>
-            </fieldset>
-
-          </div>
-
-          <div class="form-group form-group__part-half">
-            <label class="form-label">Количество</label>
-            <input id="quantity" type="number" class="form-control" name="quantity" placeholder="1" required>
-          </div>
-
-          <div class="form-group form-group__part-half">
-            <label class="form-label">Статус</label>
-            <select id="status" class="form-control" name="status">
-              <option value="1">Активен</option>
-              <option value="0">Неактивен</option>
-            </select>
-          </div>
+          ${this.#getStatusTemplate()}
 
           <div class="form-buttons">
             <button type="submit" name="save" class="button-primary-outline">Сохранить товар</button>
           </div>
         </form>
+      </div>
+    `;
+  }
+
+  #getMainFieldsTemplate() {
+    return `
+        <div class="form-group form-group__half_left">
+          <fieldset>
+            <label class="form-label">Название товара</label>
+            <input id="title" type="text" name="title" class="form-control" placeholder="Название товара" required>
+          </fieldset>
+        </div>
+
+        <div class="form-group form-group__wide">
+          <label class="form-label">Описание</label>
+          <textarea id="description" class="form-control" name="description" data-element="productDescription" placeholder="Описание товара"></textarea>
+        </div>
+    `;
+  }
+
+  #getPhotoTemplate() {
+    return `
+      <div class="form-group form-group__wide" data-element="sortable-list-container">
+        <label class="form-label">Фото</label>
+        <div data-element="imageListContainer">
+          <ul class="sortable-list" data-element="images"></ul>
+        </div>
+
+        <input
+            type="file"
+            accept="image/*"
+            data-element="imageInput"
+            style="clip: rect(0, 0, 0, 0); position: absolute;"
+        >
+        <button type="button" name="uploadImage" class="button-primary-outline" data-element="uploadImageButton">
+          <span>Загрузить</span>
+        </button>
+      </div>
+    `;
+  }
+
+  #getCategoriesTemplate() {
+    return `
+      <div class="form-group form-group__half_left">
+        <label class="form-label">Категория</label>
+        <select id="subcategory" class="form-control" name="subcategory" data-element="categories"></select>
+      </div>
+    `;
+  }
+
+  #getPriceTemplate() {
+    return `
+      <div class="form-group form-group__half_left form-group__two-col">
+
+        <fieldset>
+          <label class="form-label">Цена ($)</label>
+          <input id="price" type="number" name="price" class="form-control" placeholder="100" required>
+        </fieldset>
+
+        <fieldset>
+          <label class="form-label">Скидка ($)</label>
+          <input id="discount" type="number" name="discount" class="form-control" placeholder="0" required>
+        </fieldset>
+
+      </div>
+    `;
+  }
+
+  #getQuantityTemplate() {
+    return `
+      <div class="form-group form-group__part-half">
+        <label class="form-label">Количество</label>
+        <input id="quantity" type="number" class="form-control" name="quantity" placeholder="1" required>
+      </div>
+    `;
+  }
+
+  #getStatusTemplate() {
+    return `
+      <div class="form-group form-group__part-half">
+        <label class="form-label">Статус</label>
+        <select id="status" class="form-control" name="status">
+          <option value="1">Активен</option>
+          <option value="0">Неактивен</option>
+        </select>
       </div>
     `;
   }
@@ -181,6 +217,10 @@ export default class ProductForm extends BaseComponent {
     `;
   }
 
+  /**
+   *
+   * @returns {Promise<Object[]>}
+   */
   #loadProductData() {
     if (this.productId) {
       const url = new URL(ProductForm.#productsAPIRelativeURL, ProductForm.backendURL);
@@ -193,6 +233,10 @@ export default class ProductForm extends BaseComponent {
     return Promise.resolve([ProductForm.#defaultFormData]);
   }
 
+  /**
+   *
+   * @returns {Promise<Object[]>}
+   */
   #loadCategories() {
     const url = new URL(ProductForm.#categoriesAPIRelativeURL, ProductForm.backendURL);
 
