@@ -15,10 +15,10 @@ export default class Page extends BaseComponent {
     itemsPerPage: 25,
   }
 
-  #onRangePickerDateSelect = (event) => {
-    const {from, to} = event.detail;
+  #onRangePickerDateSelect = async (event) => {
+    const { from, to } = event.detail;
 
-    this.#updateComponents(from, to);
+    await this.#updateComponents(from, to);
   }
 
   constructor() {
@@ -46,11 +46,7 @@ export default class Page extends BaseComponent {
   }
 
   async initialize() {
-    this.#toggleLoadingState();
-
     await this.#initializeComponents();
-
-    this.#toggleLoadingState();
 
     this.addEventListeners();
   }
@@ -78,19 +74,7 @@ export default class Page extends BaseComponent {
       sortableTable,
     };
 
-    return Promise.all([
-      ordersChart.update(dateFrom, dateTo),
-      salesChart.update(dateFrom, dateTo),
-      customersChart.update(dateFrom, dateTo),
-      sortableTable.update(
-        Page.tableProperties.sortedField,
-        Page.tableProperties.order,
-        Page.tableProperties.start,
-        Page.tableProperties.itemsPerPage,
-        dateFrom,
-        dateTo,
-      ),
-    ]);
+    return this.#updateComponents(dateFrom, dateTo);
   }
 
   #createRangePicker(from, to) {
@@ -126,22 +110,23 @@ export default class Page extends BaseComponent {
     return this.element;
   }
 
-  async #updateComponents(from, to) {
+  async #updateComponents(dateFrom, dateTo) {
     this.#toggleLoadingState();
 
-    this.components.sortableTable.update(
-      Page.tableProperties.sortedField,
-      Page.tableProperties.order,
-      Page.tableProperties.start,
-      Page.tableProperties.itemsPerPage,
-      from,
-      to,
-      false,
-    );
-
-    await this.components.ordersChart.update(from, to);
-    await this.components.salesChart.update(from, to);
-    await this.components.customersChart.update(from, to);
+    await Promise.all([
+      this.components.ordersChart.update(dateFrom, dateTo),
+      this.components.salesChart.update(dateFrom, dateTo),
+      this.components.customersChart.update(dateFrom, dateTo),
+      this.components.sortableTable.update(
+        Page.tableProperties.sortedField,
+        Page.tableProperties.order,
+        Page.tableProperties.start,
+        Page.tableProperties.itemsPerPage,
+        dateFrom,
+        dateTo,
+        false,
+      ),
+    ]);
 
     this.#toggleLoadingState();
   }
