@@ -1,5 +1,6 @@
 import { BaseComponent } from "../../lib/components.js";
 import fetchJson from './utils/fetch-json.js';
+import { compare } from "../../lib/sort.js";
 
 export default class SortableTable extends BaseComponent {
   element;
@@ -31,7 +32,7 @@ export default class SortableTable extends BaseComponent {
   }
 
   #onWindowScroll = async() => {
-    if (this.#isLoading || this.isSortLocally || !this.#hasMoreRowsData) {
+    if (this.#isLoading || !this.#hasMoreRowsData) {
       return false;
     }
 
@@ -220,13 +221,21 @@ export default class SortableTable extends BaseComponent {
     }
   }
 
-  async #getDataFromServer(sortFieldId, sortOrder, start, end) {
+  async #getDataFromServer(sortFieldId, sortOrder, start, end, dateFrom, dateTo) {
     const url = new URL(this.url, SortableTable.backendURL);
 
     url.searchParams.set('_sort', sortFieldId);
     url.searchParams.set('_order', sortOrder);
     url.searchParams.set('_start', start);
     url.searchParams.set('_end', end);
+
+    if (dateFrom) {
+      url.searchParams.set('from', dateFrom.toISOString());
+    }
+
+    if (dateTo) {
+      url.searchParams.set('to', dateFrom.toISOString());
+    }
 
     this.#updateLoadingState(true);
 
@@ -252,9 +261,11 @@ export default class SortableTable extends BaseComponent {
     sortOrder = this.sorted.order,
     start = this.start,
     end = this.end,
+    dateFrom,
+    dateTo,
     append = true,
   ) {
-    const newData = await this.#getDataFromServer(sortField, sortOrder, start, end);
+    const newData = await this.#getDataFromServer(sortField, sortOrder, start, end, dateFrom, dateTo);
 
     if (newData.length === 0) {
       this.#hasMoreRowsData = false;
