@@ -1,5 +1,5 @@
-import fetchJson from './utils/fetch-json.js';
-import { BaseComponent } from "../../components/base.js";
+import fetchJson from '../lib/fetch-json.js';
+import { BaseComponent } from "./base.js";
 
 export default class ColumnChart extends BaseComponent {
   element;
@@ -73,12 +73,6 @@ export default class ColumnChart extends BaseComponent {
         return `<div style="--value: ${styleValue}" data-tooltip="${percent}%"></div>`;
       })
       .join('');
-  }
-
-  initialize() {
-    super.initialize();
-
-    this.update(this.range.from, this.range.to);
   }
 
   #updateLoadingClass(isLoading = false) {

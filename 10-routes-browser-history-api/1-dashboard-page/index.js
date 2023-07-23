@@ -1,16 +1,19 @@
-import { BaseComponent } from "../../lib/components.js";
-
-import ColumnChart from '../../07-async-code-fetch-api-part-1/1-column-chart/index.js';
-import SortableTable from '../../07-async-code-fetch-api-part-1/2-sortable-table-v3/index.js';
-import RangePicker from '../../08-forms-fetch-api-part-2/2-range-picker/index.js';
+import { BaseComponent } from "../../components/base.js";
+import RangePicker from '../../components/range-picker.js';
+import ColumnChart from '../../components/column-chart.js';
+import SortableTable from '../../components/sortable-table.js';
 
 import sortableTableHeader from './bestsellers-header.js';
 
 export default class Page extends BaseComponent {
   components = {};
-  url;
 
-  static itemsPerPage = 25;
+  static tableProperties = {
+    sortedField: 'title',
+    order: 'asc',
+    start: 0,
+    itemsPerPage: 25,
+  }
 
   #onRangePickerDateSelect = (event) => {
     const {from, to} = event.detail;
@@ -20,8 +23,6 @@ export default class Page extends BaseComponent {
 
   constructor() {
     super();
-
-    this.url = new URL('api/dashboard/bestsellers', Page.backendURL);
 
     this.initialize();
   }
@@ -63,28 +64,11 @@ export default class Page extends BaseComponent {
 
     const rangePicker = this.#createRangePicker(dateFrom, dateTo);
 
-    const ordersChart = this.#createColumnChart(
-      'api/dashboard/orders',
-      dateFrom,
-      dateTo,
-      'Orders',
-    );
+    const ordersChart = this.#createColumnChart('api/dashboard/orders', 'Orders');
+    const salesChart = this.#createColumnChart('api/dashboard/sales', 'Sales');
+    const customersChart = this.#createColumnChart('api/dashboard/customers', 'Customers');
 
-    const salesChart = this.#createColumnChart(
-      'api/dashboard/sales',
-      dateFrom,
-      dateTo,
-      'Sales',
-    );
-
-    const customersChart = this.#createColumnChart(
-      'api/dashboard/customers',
-      dateFrom,
-      dateTo,
-      'Customers',
-    );
-
-    const sortableTable = this.#createSortableTable(dateFrom, dateTo);
+    const sortableTable = this.#createSortableTable('api/dashboard/bestsellers', dateFrom, dateTo);
 
     this.components = {
       rangePicker,
@@ -93,6 +77,20 @@ export default class Page extends BaseComponent {
       customersChart,
       sortableTable,
     };
+
+    return Promise.all([
+      ordersChart.update(dateFrom, dateTo),
+      salesChart.update(dateFrom, dateTo),
+      customersChart.update(dateFrom, dateTo),
+      sortableTable.update(
+        Page.tableProperties.sortedField,
+        Page.tableProperties.order,
+        Page.tableProperties.start,
+        Page.tableProperties.itemsPerPage,
+        dateFrom,
+        dateTo,
+      ),
+    ]);
   }
 
   #createRangePicker(from, to) {
@@ -102,25 +100,18 @@ export default class Page extends BaseComponent {
     });
   }
 
-  #createColumnChart(url, from, to, label, link = '#') {
+  #createColumnChart(url, label, link = '#') {
     return new ColumnChart({
-      url: url,
-      range: {
-        from,
-        to
-      },
-      label: 'orders',
+      url,
+      label: label,
       link: link,
     });
   }
 
-  #createSortableTable(dateFrom, dateTo, itemsPerPage = Page.itemsPerPage) {
-    this.url.searchParams.set('from', dateFrom.toISOString());
-    this.url.searchParams.set('to', dateTo.toISOString());
-
+  #createSortableTable(url) {
     return new SortableTable(sortableTableHeader, {
-      url: this.url.toString(),
-      step: itemsPerPage,
+      url,
+      step: Page.tableProperties.itemsPerPage,
       isSortLocally: true,
     });
   }
@@ -139,10 +130,10 @@ export default class Page extends BaseComponent {
     this.#toggleLoadingState();
 
     this.components.sortableTable.update(
-      'title',
-      'asc',
-      0,
-      Page.itemsPerPage,
+      Page.tableProperties.sortedField,
+      Page.tableProperties.order,
+      Page.tableProperties.start,
+      Page.tableProperties.itemsPerPage,
       from,
       to,
       false,

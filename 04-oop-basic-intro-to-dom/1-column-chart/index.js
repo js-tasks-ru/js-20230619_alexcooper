@@ -1,4 +1,4 @@
-import { BaseComponent } from "../../lib/components.js";
+import { BaseComponent } from "../../components/base.js";
 
 const CHART_IS_LOADING_CLASS = 'column-chart_loading';
 const CHART_BODY_CLASS = 'column-chart__chart';

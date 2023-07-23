@@ -1,4 +1,4 @@
-import { BaseComponent } from "../../lib/components.js";
+import { BaseComponent } from "../../components/base.js";
 
 export default class SortableList extends BaseComponent {
   draggingElement;
@@ -39,7 +39,7 @@ export default class SortableList extends BaseComponent {
     }
   }
 
-  #onDocumentPointerUp = (event) => {
+  #onDocumentPointerUp = () => {
     if (this.draggingElement) {
       this.#stopListElementDragging();
     }

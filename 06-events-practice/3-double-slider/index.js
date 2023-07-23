@@ -1,4 +1,4 @@
-import { BaseComponent } from "../../lib/components.js";
+import { BaseComponent } from "../../components/base.js";
 
 const SLIDER_IS_DRAGGING_CLASS_NAME = 'range-slider_dragging';
 
