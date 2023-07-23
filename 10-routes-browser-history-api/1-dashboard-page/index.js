@@ -4,8 +4,6 @@ import ColumnChart from '../../07-async-code-fetch-api-part-1/1-column-chart/ind
 import SortableTable from '../../07-async-code-fetch-api-part-1/2-sortable-table-v3/index.js';
 import RangePicker from '../../08-forms-fetch-api-part-2/2-range-picker/index.js';
 
-import fetchJson from './utils/fetch-json.js';
-
 import sortableTableHeader from './bestsellers-header.js';
 
 export default class Page extends BaseComponent {
@@ -140,10 +138,6 @@ export default class Page extends BaseComponent {
   async #updateComponents(from, to) {
     this.#toggleLoadingState();
 
-    const data = await this.#loadData(from, to);
-
-    this.#toggleLoadingState();
-
     this.components.sortableTable.update(
       'title',
       'asc',
@@ -157,17 +151,8 @@ export default class Page extends BaseComponent {
     await this.components.ordersChart.update(from, to);
     await this.components.salesChart.update(from, to);
     await this.components.customersChart.update(from, to);
-  }
 
-  #loadData(dateFrom, dateTo) {
-    this.url.searchParams.set('_start', '1');
-    this.url.searchParams.set('_end', Page.itemsPerPage);
-    this.url.searchParams.set('_sort', 'title');
-    this.url.searchParams.set('_order', 'asc');
-    this.url.searchParams.set('from', dateFrom.toISOString());
-    this.url.searchParams.set('to', dateTo.toISOString());
-
-    return fetchJson(this.url);
+    this.#toggleLoadingState();
   }
 
   #renderComponents() {
