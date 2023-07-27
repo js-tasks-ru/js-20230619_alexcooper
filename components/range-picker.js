@@ -1,4 +1,4 @@
-import { BaseComponent } from "../../components/base.js";
+import { BaseComponent } from "./base.js";
 
 export default class RangePicker extends BaseComponent {
   selected = {

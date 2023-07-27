@@ -55,9 +55,11 @@ class BaseComponent {
     throw new Error('Not implemented');
   }
 
-  addEventListeners() {}
+  addEventListeners() {
+  }
 
-  removeEventListeners() {}
+  removeEventListeners() {
+  }
 
   remove() {
     if (this.element) {
@@ -74,4 +76,4 @@ class BaseComponent {
   }
 }
 
-export { BaseComponent };
+export {BaseComponent};

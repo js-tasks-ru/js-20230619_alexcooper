@@ -1,6 +1,6 @@
-import { BaseComponent } from "../../lib/components.js";
 import escapeHtml from './utils/escape-html.js';
 import fetchJson from './utils/fetch-json.js';
+import { BaseComponent } from "../../components/base.js";
 
 export default class ProductForm extends BaseComponent {
   formData = {};

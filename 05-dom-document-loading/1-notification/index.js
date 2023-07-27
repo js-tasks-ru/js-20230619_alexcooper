@@ -1,4 +1,4 @@
-import { BaseComponent } from "../../lib/components.js";
+import { BaseComponent } from "../../components/base.js";
 
 export default class NotificationMessage extends BaseComponent {
   static activeNotification;

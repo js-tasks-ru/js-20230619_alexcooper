@@ -1,6 +1,6 @@
-import fetchJson from './utils/fetch-json.js';
-import { compare } from "../../lib/sort.js";
-import { BaseComponent } from "../../components/base.js";
+import { BaseComponent } from "./base.js";
+import { compare } from "../lib/sort.js";
+import fetchJson from '../lib/fetch-json.js';
 
 export default class SortableTable extends BaseComponent {
   element;
@@ -140,17 +140,6 @@ export default class SortableTable extends BaseComponent {
     }).join('');
   }
 
-  async initialize() {
-    super.initialize();
-
-    await this.update(
-      this.sorted.id,
-      this.sorted.order,
-      this.start,
-      this.end,
-    );
-  }
-
   #sortData(field, order) {
     const sortedData = [...this.data];
 
@@ -234,7 +223,7 @@ export default class SortableTable extends BaseComponent {
     }
 
     if (dateTo) {
-      url.searchParams.set('to', dateFrom.toISOString());
+      url.searchParams.set('to', dateTo.toISOString());
     }
 
     this.#updateLoadingState(true);

@@ -1,4 +1,4 @@
-import { BaseComponent } from "../../lib/components.js";
+import { BaseComponent } from "../../components/base.js";
 
 const TOOLTIP_POSITION_OFFSET = 10;
 

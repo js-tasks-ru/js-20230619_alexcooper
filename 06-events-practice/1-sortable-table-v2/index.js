@@ -1,5 +1,5 @@
-import { BaseComponent } from "../../lib/components.js";
 import { compare } from '../../lib/sort.js';
+import { BaseComponent } from "../../components/base.js";
 
 export default class SortableTable {
   element;
